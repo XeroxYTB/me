@@ -1,1 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hugo</title>
+  <meta name="description" content="Portfolio personnel en style hacker / terminal, animé et responsive." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <style>
+    /* -----------------------------
+       THEME (tons hacker / néon)
+    ------------------------------*/
+    :root{
+      --bg: #0a0f0a;
+      --panel: #0d120f;
+      --panel-2: #0f1512;
+      --txt: #dbffe9; /* vert pâle lisible */
+      --muted: #96b3a3;
+      --neon: #00ff88; /* vert néon principal */
+      --neon-2:#14ff62;
+      --accent:#35c2a1; /* touche bleutée */
+      --danger:#ff3b6b;
+      --shadow: 0 0 30px rgba(0,255,136,.15), 0 0 80px rgba(0,255,136,.08);
+      --radius: 18px;
+      --grid-max: 1150px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Fira Code", "Courier New", monospace;
+      color:var(--txt); background: radial-gradient(1200px 800px at 70% -10%, rgba(0,255,136,.12), transparent 60%),
+                  radial-gradient(900px 600px at -20% 80%, rgba(35,194,161,.08), transparent 60%), var(--bg);
+      overflow-x:hidden;
+    }
 
+    /* Matrix rain canvas */
+    #matrix{position:fixed; inset:0; z-index:-1; opacity:.15;}
+
+    a{color:var(--neon); text-decoration:none}
+    a:hover{filter:brightness(1.2)}
+
+    .container{max-width:var(--grid-max); margin-inline:auto; padding: clamp(16px, 3vw, 28px)}
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:9; backdrop-filter: blur(7px);
+      background:linear-gradient(180deg, rgba(13,18,15,.8), rgba(13,18,15,.4));
+      border-bottom:1px solid rgba(0,255,136,.18);
+    }
+    .nav{display:flex; gap:16px; align-items:center; justify-content:space-between}
+    .brand{display:flex; gap:10px; align-items:center; letter-spacing:.5px}
+    .logo{width:30px; height:30px; border-radius:8px; display:grid; place-items:center; color:var(--bg);
+      background: conic-gradient(from 210deg at 50% 50%, var(--neon), var(--accent));
+      box-shadow: 0 0 0 2px rgba(0,255,136,.35), 0 6px 30px rgba(0,255,136,.25);
+    }
+    .nav a{padding:10px 12px; border-radius:12px; border:1px solid transparent}
+    .nav a:hover{border-color: rgba(0,255,136,.25); background: rgba(20,255,98,.06)}
+
+    /* Hero */
+    .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:32px; align-items:center}
+    .hero-card{
+      background:linear-gradient(180deg, rgba(20,255,98,.05), rgba(0,0,0,.0));
+      border:1px solid rgba(20,255,98,.18); border-radius:var(--radius);
+      padding: clamp(18px, 4vw, 34px);
+      box-shadow: var(--shadow);
+      position:relative; overflow:hidden;
+    }
+    .glow-edge{position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
+      background: conic-gradient(from 0deg, rgba(0,255,136,.25), transparent 30%, transparent 70%, rgba(20,255,98,.14));
+      filter: blur(12px); opacity:.55; mix-blend:screen;
+    }
+
+    .kbd{
+      display:inline-grid; place-items:center; min-width:26px; padding:2px 8px; margin-right:4px;
+      border:1px solid rgba(0,255,136,.35); color:var(--txt); border-radius:10px; font-size:.92rem;
+      background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,255,136,.06));
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,.06), 0 0 20px rgba(0,255,136,.08);
+    }
+
+    .typing{font-size:clamp(26px, 4.5vw, 44px); line-height:1.15; font-weight:700; color:var(--txt)}
+    .cursor{display:inline-block; width:10px; background:var(--neon); margin-left:4px; animation:blink 1s steps(1) infinite}
+    @keyframes blink{50%{background:transparent}}
+
+    .hero p{color:var(--muted)}
+
+    .cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+    .btn{
+      border-radius:14px; padding:12px 16px; border:1px solid rgba(0,255,136,.38);
+      background:linear-gradient(180deg, rgba(0,255,136,.15), rgba(0,0,0,0));
+      color:var(--txt); display:inline-flex; gap:10px; align-items:center; font-weight:600;
+      box-shadow: 0 8px 25px rgba(0,255,136,.08);
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow: 0 12px 30px rgba(0,255,136,.12)}
+    .btn.ghost{border-color: rgba(0,255,136,.25); background:rgba(0,0,0,.3)}
+
+    /* Sections */
+    section{padding: 54px 0}
+    h2{font-size: clamp(20px, 3.2vw, 28px); margin:0 0 18px}
+    .panel{background:linear-gradient(180deg, rgba(20,255,98,.05), rgba(0,0,0,0));
+      border:1px solid rgba(20,255,98,.18); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+
+    .grid{display:grid; gap:16px}
+    .grid.cols-3{grid-template-columns: repeat(3, 1fr)}
+    .grid.cols-2{grid-template-columns: repeat(2, 1fr)}
+    @media (max-width: 980px){ .hero{grid-template-columns:1fr} .grid.cols-3{grid-template-columns:1fr 1fr} }
+    @media (max-width: 680px){ .grid.cols-2, .grid.cols-3{grid-template-columns:1fr} }
+
+    /* Skills */
+    .skill{display:grid; gap:6px}
+    .bar{height:10px; background:rgba(255,255,255,.06); border-radius:10px; overflow:hidden; border:1px solid rgba(0,255,136,.18)}
+    .bar > span{display:block; height:100%; background: linear-gradient(90deg, var(--neon), var(--accent)); box-shadow: 0 0 24px rgba(0,255,136,.35)}
+
+    /* Projects */
+    .card{position:relative; border-radius:var(--radius); overflow:hidden; border:1px solid rgba(20,255,98,.18); background:linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,255,136,.05)); box-shadow:var(--shadow)}
+    .card .content{padding:16px}
+    .chip{display:inline-block; padding:6px 10px; border:1px solid rgba(0,255,136,.28); border-radius:999px; font-size:.85rem; opacity:.9}
+
+    /* Terminal */
+    .terminal{background: #030704; border:1px solid rgba(0,255,136,.2); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow)}
+    .term-head{display:flex; align-items:center; gap:8px; padding:10px 12px; background:linear-gradient(180deg, rgba(0,255,136,.1), rgba(0,0,0,.2)); border-bottom:1px solid rgba(0,255,136,.2)}
+    .dot{width:12px; height:12px; border-radius:50%; background:var(--neon); box-shadow:0 0 10px rgba(0,255,136,.8)}
+    .term-body{padding:14px; height:min(52vh, 520px); overflow:auto; font-size:14px}
+    .prompt{display:flex; gap:8px; align-items:center; padding:8px 12px; border-top:1px solid rgba(0,255,136,.2)}
+    .prompt input{flex:1; background:transparent; color:var(--txt); border:none; outline:none; font: inherit}
+
+    /* Contact */
+    form{display:grid; gap:10px}
+    input, textarea{
+      width:100%; padding:12px 14px; border-radius:12px; color:var(--txt);
+      background:rgba(255,255,255,.02); border:1px solid rgba(0,255,136,.25);
+    }
+    textarea{min-height:120px; resize:vertical}
+
+    footer{padding:22px 0; color:var(--muted); text-align:center; border-top:1px dashed rgba(0,255,136,.25)}
+
+    /* Subtle scanline overlay */
+    .scanlines::after{
+      content:""; position:fixed; inset:0; pointer-events:none; opacity:.06;
+      background: repeating-linear-gradient( to bottom, rgba(255,255,255,.08), rgba(255,255,255,.08) 1px, transparent 1px, transparent 3px );
+      mix-blend-overlay; z-index:0;
+    }
+
+    .section-title{display:flex; align-items:center; gap:10px}
+    .section-title .bar-v{width:6px; height:20px; background:linear-gradient(180deg, var(--neon), transparent); border-radius:8px; box-shadow: 0 0 14px rgba(0,255,136,.6)}
+
+    .muted{color:var(--muted)}
+    .right{justify-self:end}
+
+    /* Little glitch effect on hover */
+    .glitch{position:relative; display:inline-block}
+    .glitch::before, .glitch::after{
+      content:attr(data-text); position:absolute; left:0; top:0; padding:inherit; overflow:hidden; clip-path: inset(0 0 0 0);
+    }
+    .glitch:hover::before{ left:2px; text-shadow: -2px 0 var(--neon); opacity:.75}
+    .glitch:hover::after{ left:-2px; text-shadow: 2px 0 var(--accent); opacity:.75}
+  </style>
+</head>
+<body class="scanlines">
+  <canvas id="matrix"></canvas>
+
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">
+        <img src="logo.png" alt="Logo" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;">
+        </div>
+        <strong>hugo@site<span class="muted">:~$</span></strong>
+      </div>
+      <nav class="links">
+        <a href="#about">À propos</a>
+        <a href="#skills">Compétences</a>
+        <a href="#projects">Projets</a>
+        <a href="#contact">Contact</a>
+        <a href="#terminal" class="kbd">CTRL</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="skills">
+      <h2 class="section-title"><span class="bar-v"></span> Compétences</h2>
+      <div class="grid cols-3">
+        <div class="panel skill">
+          <strong>JavaScript</strong>
+          <div class="bar" aria-label="Niveau JavaScript"><span style="width:92%"></span></div>
+          <span class="muted">ES202x, DOM, API, tooling</span>
+        </div>
+        <div class="panel skill">
+          <strong>CSS / UI</strong>
+          <div class="bar" aria-label="Niveau CSS"><span style="width:88%"></span></div>
+          <span class="muted">Flex/Grid, animations, responsive</span>
+        </div>
+        <div class="panel skill">
+          <strong>Firebase</strong>
+          <div class="bar" aria-label="Niveau Firebase"><span style="width:80%"></span></div>
+          <span class="muted">Auth, Firestore, Storage</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2 class="section-title"><span class="bar-v"></span> Projets</h2>
+      <div class="grid cols-3">
+        <article class="card">
+          <div class="content">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:center">
+              <h3 style="margin:0">MyGenda</h3>
+              <span class="chip">Firebase</span>
+            </div>
+            <p class="muted">Agenda collaboratif ultra-premium, mobile-first, avec authentification et Firestore.</p>
+            <a class="btn" href="https://github.com/XeroxYTB/Mygenda" target="_blank" rel="noopener">Voir le project</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="content">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:center">
+              <h3 style="margin:0">Texty</h3>
+              <span class="chip">Web App</span>
+            </div>
+            <p class="muted">Messagerie instantanée inspirée de Snapchat, suppression auto des messages.</p>
+            <a class="btn" href="https://github.com/XeroxYTB/Texty" target="_blank" rel="noopener">Voir le project</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="content">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:center">
+              <h3 style="margin:0">Terminal Tricks</h3>
+              <span class="chip">CLI</span>
+            </div>
+            <p class="muted">Brutforceur de compte windows local a l'aide d'une passlist.</p>
+            <a class="btn" href="https://github.com/XeroxYTB/WindowsAccountBruteForce" target="_blank" rel="noopener">Voir le project</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> Hugo • Construit avec du <span aria-label="amour">❤️</span> & du <span style="color:var(--neon)">☕</span> •  All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    /* -----------------------------
+       Typing effect (hero title)
+    ------------------------------*/
+    const typingEl = document.getElementById('typing');
+    const title = 'Bonjour, je suis Hugo — développeur full‑stack.';
+    let i = 0;
+    (function type(){
+      typingEl.textContent = title.slice(0, i++);
+      if(i <= title.length){ setTimeout(type, 28); }
+    })();
+
+    /* -----------------------------
+       Matrix rain background
+    ------------------------------*/
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight }
+    addEventListener('resize', resize); resize();
+    const letters = '01░▒▓█$#&%<>[]{}*/\\=+-_'.split('');
+    let columns = Math.floor(canvas.width / 16);
+    let drops = Array(columns).fill(0);
+    function draw(){
+      ctx.fillStyle = 'rgba(10, 15, 10, 0.18)';
+      ctx.fillRect(0,0,canvas.width, canvas.height);
+      ctx.fillStyle = '#00ff88';
+      ctx.font = '16px monospace';
+      for (let i=0; i<drops.length; i++){
+        const text = letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text, i*16, drops[i]*16);
+        if(drops[i]*16 > canvas.height && Math.random() > 0.975){ drops[i]=0 }
+        drops[i]++
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
